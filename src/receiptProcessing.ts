@@ -24,7 +24,7 @@ export class ReceiptProcessing {
 	static calculatePoints(receiptJson: any) {
 		let points = 0;
 		points += this.calculatePtsRetailer(receiptJson["retailer"]);
-		points += this.calculatePtsTotal(receiptJson["total"]);
+		points += this.calculatePtsTotal(+receiptJson["total"]);
 		points += this.calculatePtsItems(receiptJson["items"]);
 		points += this.calculatePtsDate(receiptJson["purchaseDate"]);
 		points += this.calculatePtsTime(receiptJson["purchaseTime"]);
@@ -66,9 +66,9 @@ export class ReceiptProcessing {
 	// 6 points if the day in the purchase date is odd
 	static calculatePtsDate(date: string): number {
 		const splitDate = date.split("-");
-		if (splitDate.length < 2 || !Number.isInteger(+splitDate[1])) return 0;
+		if (splitDate.length < 3 || !Number.isInteger(+splitDate[2])) return 0;
 
-		if (Number(splitDate[1]) % 2 !== 0) return 6;
+		if (Number(splitDate[2]) % 2 !== 0) return 6;
 		else return 0;
 	}
 

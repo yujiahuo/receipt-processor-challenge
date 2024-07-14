@@ -24,6 +24,10 @@ describe("Calculate points total", () => {
 		expect(ReceiptProcessing.calculatePtsTotal(100)).toEqual(75);
 	});
 
+	test("100.00", () => {
+		expect(ReceiptProcessing.calculatePtsTotal(100.00)).toEqual(75);
+	});
+
 	test("1.4", () => {
 		expect(ReceiptProcessing.calculatePtsTotal(1.4)).toEqual(0);
 	});
@@ -125,8 +129,12 @@ describe("Calculate points items", () => {
 });
 
 describe("Calculate points date", () => {
-	test("Bad format", () => {
+	test("Not a date", () => {
 		expect(ReceiptProcessing.calculatePtsDate("hello")).toEqual(0);
+	});
+
+	test("Bad format", () => {
+		expect(ReceiptProcessing.calculatePtsDate("202-1")).toEqual(0);
 	});
 
 	test("Empty", () => {
@@ -134,11 +142,11 @@ describe("Calculate points date", () => {
 	});
 
 	test("Good odd date", () => {
-		expect(ReceiptProcessing.calculatePtsDate("12-05-2020")).toEqual(6);
+		expect(ReceiptProcessing.calculatePtsDate("2020-12-13")).toEqual(6);
 	});
 
 	test("Good even date", () => {
-		expect(ReceiptProcessing.calculatePtsDate("12-12-2020")).toEqual(0);
+		expect(ReceiptProcessing.calculatePtsDate("2020-12-12")).toEqual(0);
 	});
 });
 
@@ -221,5 +229,53 @@ describe("Validate time", () => {
 
 	test("Empty", () => {
 		expect(ReceiptProcessing.isTimeFormatValid("")).toBeFalsy();
+	});
+});
+
+describe("Integration tests", () => {
+	test("All the points", () => {
+		const receiptJson = {
+			'retailer': '1234567',
+  			'purchaseDate': '2022-03-21',
+  			'purchaseTime': '14:33',
+  			'items': [
+				{
+					'shortDescription': 'abc',
+					'price': '11'
+				},
+				{
+					'shortDescription': 'abc',
+					'price': '11'
+				},
+				{
+					'shortDescription': 'abc',
+					'price': '11'
+				},
+				{
+					'shortDescription': 'abc',
+					'price': '11'
+				}
+			],
+			'total': '9.00'
+		}
+
+		expect(ReceiptProcessing.calculatePoints(receiptJson)).toEqual(120);
+	});
+
+	test("Points from name only", () => {
+		const receiptJson = {
+			'retailer': '1234567',
+  			'purchaseDate': '2022-03-20',
+  			'purchaseTime': '1:33',
+  			'items': [
+				{
+					'shortDescription': 'abcd',
+					'price': '11'
+				}
+			],
+			'total': '9.10'
+		}
+
+		expect(ReceiptProcessing.calculatePoints(receiptJson)).toEqual(7);
 	});
 });

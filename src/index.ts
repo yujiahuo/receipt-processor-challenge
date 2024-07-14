@@ -7,12 +7,16 @@ const port = process.env.PORT || 8080;
 app.use(express.json());
 app.listen(port, () => console.log(`app listening on http://locahost:${port}`));
 
+app.get("/", (req, res) => {
+	res.json({message: "App is running"});
+})
+
 app.post('/receipts/process', (req, res) => {
 	const receiptJson = req.body;
 
 	const id = ReceiptProcessing.processPoints(receiptJson);
 	if (!id) {
-		res.status(400).send("your receipt json is bad and you should feel bad");
+		res.status(400).send("Hm, your receipt format doesn't look right.");
 	}
 	else {
 		res.json(
